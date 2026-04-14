@@ -1,0 +1,223 @@
+---
+title: "traktok - Methods Hub"
+format:
+  html:
+    code-fold: show
+execute:
+  eval: true
+  echo: true
+  warning: false
+  message: false
+  freeze: false
+engine: knitr
+---
+
+# traktok: Access TikTok Data from R
+<!--
+General specifications:
+- This specification of the Methods Hub friendly README often uses the word 'should' to indicate the usual case. If you feel you need to do it differently, add a comment to argue for your case when you submit your method.
+- A Methods Hub friendly README should contain all sections below that are not marked as optional, and can contain more sections.
+- A Methods Hub friendly README should contain as few technical terms as possible and explain (or link to an explanation of) all used technical terms.
+- A Methods Hub friendly README should link to all code files that it mentions using the [text](URL relative to this file) format. The relative URL (i.e., no "https://github.com") is neccessary for proper versioning in Methods Hub.
+- A Methods Hub friendly README should contain an explanation (in the text) and an alternative for each image it contains (e.g., data models, pipeline, schema structure). Format: ![alternative text that describes what is visible in the image](URL relative to this file).
+- A Methods Hub friendly README should link to authoritative sources rather than containing a copy of the information (e.g., documentation).
+- A Methods Hub friendly README should use a uniform citation style for all references, for example APA7 https://apastyle.apa.org/style-grammar-guidelines/references/examples
+
+Title:
+1. The title must be the README's only first-level heading (line starting with a single '#').
+2. The title should make the method's purpose clear.
+3. The title (line 1 of this file) must be changed by you, but all other headings should be kept as they are.
+4. The title must be appropriate (not harmful, derogatory, etc.).
+
+Section templates:
+The README template comes with text templates for each section (after each comment) that can be used, customized or removed as desired.
+-->
+
+## Description
+<!--
+1. Provide a brief and exact description of the method clearly mentioning its purpose i.e., what the method does or aims to achieve in abstract terms (avoiding technical details).
+2. The focus should be on explaining the method in a way that helps users with different levels of expertise understand what it does, without going into technical details. It should clearly describe what inputs are needed and what outputs can be expected.
+3. Briefly explain the input and output of the method and its note worthy features.
+4. Provide link(s) to related papers from the social science domain using the method or similar methods for solving social science research questions. 
+5. In a separate paragraph, highlight the reproducibility aspect of the method providing details or references to the resources used by the method, the data used in building the pre-trained modules etc.
+6. It should also discuss the decisions and parameters controlling the behavior of the method.
+-->
+`traktok` is an R package for collecting **TikTok** data. It supports the official **TikTok Research API** (for eligible researchers) and a browser-mimicking **hidden API** (unofficial) to retrieve videos, users, comments, and relationships for research use. Outputs are tidy tibbles suitable for downstream analysis and archiving.
+
+> **Stability note:** Hidden/unofficial endpoints can break without notice if TikTok changes request formats or storage. The package is maintained actively, but functions may require updates over time.
+
+
+## Use Cases
+
+- **Collect platform samples** for for example by hashtags or keywords, to study mobilization, misinformation or topic visibility.
+- **Retrieve engagement signals** (digg/like, share, comments, play counts) to model content diffusion and attention.
+- **Map network relations** (followers/following) for influence analyses.
+- **Download media** (video files) for computational content analysis (e.g., frames, audio, OCR)-subject to legal/ethical review.
+- **Combine Research API and hidden API** to cover gaps in coverage (if you have Research API access).
+
+## Input Data
+
+- **No local input required** to start: you provide search terms or identifiers (e.g., hashtags, user names, video URLs or IDs), and the package contacts TikTok’s services and returns the results as tibbles (data frames).
+- **Authentication:** Some endpoints require authentication - via `auth_research()` (Research API) or `auth_hidden()` (hidden API). See the package vignettes for setup.
+- **What you provide:** Depending on the function, you specify hashtags/keywords, user handles/IDs, video URLs/IDs, or playlist IDs.
+
+## Output Data
+
+Most functions return **tibbles** with columns like:
+- `video_id`, `video_url`, `video_timestamp`, `video_length`, `video_title`  
+- engagement: `video_diggcount`, `video_sharecount`, `video_commentcount`, `video_playcount`, `video_is_ad`  
+- author/user: `author_name`, `author_username`, `author_nickname`, `author_followercount`, `author_followingcount`, `author_heartcount`, `author_videocount`, `author_diggcount`  
+- nested: `music`, `challenges`,     and for downloads `download_url`, `video_fn`   
+
+Exact fields vary by endpoint; see function docs and vignettes.
+
+```{r}
+# Example: minimal toy output structure
+example_output <- data.frame(
+  video_id           = c("123", "456"),
+  video_url          = c("https://www.tiktok.com/@user1/video/123",
+                         "https://www.tiktok.com/@user2/video/456"),
+  video_length       = c(12L, 34L),
+  video_title        = c("Example video 1", "Example video 2"),
+  video_diggcount    = c(100L, 250L),
+  video_commentcount = c(10L, 40L)
+)
+
+str(example_output)
+```
+
+## Hardware Requirements
+
+Typical API sampling is lightweight (CPU/RAM) and will run on any machine, that can run R.    Media downloads may require disk space and bandwidth (e.g., gigabytes for many videos).
+
+## Environment Setup
+Make sure that you are using the most recent package versions to ensure functionality. If you encounter any issues take advantage of the Issue Tracker, which you can find under "Contact Details".
+```{r, eval=FALSE}
+install.packages("chromote")
+remotes::install_github("JBGruber/traktok")
+install.packages("cookiemonster")
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Quick check: can 'chromote' be loaded? (offline-safe)
+if (nzchar(system.file(package = "chromote"))) {
+  library(chromote)
+  print(utils::packageVersion("chromote"))
+} else {
+}
+# Quick check: can 'traktok' be loaded? (offline-safe)
+if (nzchar(system.file(package = "traktok"))) {
+  library(traktok)
+  print(utils::packageVersion("traktok"))
+} else {
+}
+# Quick check: can 'cookiemonster' be loaded? (offline-safe)
+if (nzchar(system.file(package = "cookiemonster"))) {
+  library(cookiemonster)
+  print(utils::packageVersion("cookiemonster"))
+} else {
+}
+```
+
+## How to Use
+
+**Note:** Most of the examples below require authentication and network access and are therefore set to `eval = FALSE` by default. Execution in an interactive environment is not advised, instead we would suggest running this file on your own machine.
+
+### Feature overview (selected)
+The following table gives an overview of commonly used helper functions that you will use in typical workflows (searching for videos, retrieving user data, downloading media, etc.):
+
+| Description | Shorthand | Research API | Hidden API |
+|:---|:---|:---|:---|
+| search videos | `tt_search` | `tt_search_api` | `tt_search_hidden` |
+| get video detail (+file) | `tt_videos` | – | `tt_videos_hidden` |
+| get user videos | `tt_user_videos` | `tt_user_videos_api` | `tt_user_videos_hidden` |
+| get user info | `tt_user_info` | `tt_user_info_api` | `tt_user_info_hidden` |
+| get comments under a video | `tt_comments` | `tt_comments_api` | – |
+| who follows a user | `tt_get_follower` | `tt_user_follower_api` | `tt_get_follower_hidden` |
+| who a user follows | `tt_get_following` | `tt_user_following_api` | `tt_get_following_hidden` |
+| liked videos | `tt_get_liked` | `tt_user_liked_videos_api` | – |
+| pinned videos | `tt_get_pinned` | `tt_user_pinned_videos_api` | – |
+| playlist videos | `tt_playlist` | `tt_playlist_api` | – |
+| raw post data | – | – | `tt_request_hidden` |
+| authenticate | – | `auth_research` | `auth_hidden` |
+
+### Authenticate (choose one)
+In order to use the R package and access data from TikTok a verification is needed. You can choose to use the official Research API or an unofficial API access.
+
+To get started with the unofficial/hidden API, you can have a look here: [Unofficial API Guide](https://jbgruber.github.io/traktok/articles/unofficial-api.html).      
+If you have access to the Research API or want to apply for it, have a look at this: [Official API Guide](https://jbgruber.github.io/traktok/articles/research-api.html).       
+
+```{r, eval=FALSE}
+# Research API (requires approved access from TikTok)
+auth_research(token = "YOUR_RESEARCH_API_TOKEN")
+
+# Hidden API (mimics browser session; see Unofficial API Guide for cookie setup)
+cookiemonster::add_cookies("www.tiktok.com_cookies.txt")
+auth_check()
+```
+
+The following examples use only the **hidden/unofficial API**. Note that, for larger collections, it is a good idea to work in smaller batches and save intermediate results, since repeated requests can trigger captchas, temporary blocking, or other interruptions.
+
+### Search videos by hashtag
+Use `tt_search_hidden()` to search TikTok by hashtag.In this example we are looking for videos with the #rstats. In contrast to a simple URL list, the result is a tibble with video metadata such as URLs, titles, timestamps, engagement counts, and author information.
+
+```{r, eval=FALSE}
+rstats_vids <- tt_search(
+  "#rstats",
+  scroll = "30s",
+  verbose = FALSE
+)
+
+rstats_vids
+```
+
+### Download videos to a local folder
+
+If you want to save the actual video files for later analysis, you can pass the video URLs returned by the search to tt_videos(). This step also returns metadata for the requested videos.
+
+```{r, eval=FALSE}
+dir.create("videos", showWarnings = FALSE)
+
+dl <- tt_videos(
+  rstats_vids$video_url,
+  dir = "videos",
+  verbose = FALSE
+)
+
+dl
+
+tibble::tibble(
+  file = list.files("videos"),
+  size_Mb = file.size(list.files("videos", full.names = TRUE)) / 1e6
+)
+```
+
+### Get user information (hidden API)
+
+To retrieve basic information about an account, use tt_user_info_hidden(). This can be useful if you want to inspect account-level metadata before deciding whether to collect additional material.
+
+```{r, eval=FALSE}
+u <- tt_user_info("statisticsglobe")
+dplyr::glimpse(u)
+```
+
+## Technical Details
+
+See the [official blogpost](https://www.johannesbgruber.eu/post/2023-12-04-re-release-traktok/) for further information about technical details.
+
+## References
+
+- Hohner, J., Kakavand, A., & Rothut, S. (2024). Analyzing Radical Visuals at Scale: How Far-Right Groups Mobilize on TikTok. *Journal of Digital Social Research, 6*(1), 10–30. [https://doi.org/10.33621/jdsr.v6i1.200](https://doi.org/10.33621/jdsr.v6i1.200)
+- Widholm, A., Ekman, M., & Larsson, A. O. (2024). A Right-Wing Wave on TikTok? Ideological Orientations, Platform Features, and User Engagement During the Early 2022 Election Campaign in Sweden. *Social Media + Society, 10*(3). [https://doi.org/10.1177/20563051241269266](https://doi.org/10.1177/20563051241269266)
+- Wirz, D. S., Zai, F., Vogler, D., Urman, A., & Eisenegger, M. (2023). *Die Qualität von Schweizer Medien auf Instagram und TikTok*. [https://doi.org/10.5167/UZH-238605](https://doi.org/10.5167/UZH-238605)
+- Bach, P., Gitomer, A., Devries, M., Walker, C., Deyoe, D., Atienza-Bathelemy, J., Foucault Welles, B., Freelon, D., & Zulli, D. (2023, October). *Stitching Politics and Identity on TikTok*. Panel at AoIR2023, Philadelphia, PA.
+- Giglietto, F. (2024). *Dashboard: TikTok Coordinated Sharing Network*. [https://fabiogiglietto.github.io/tiktok_csbn/tt_viz.html](https://fabiogiglietto.github.io/tiktok_csbn/tt_viz.html)
+
+## Disclaimer
+
+This method is for research. Use is subject to TikTok’s Terms and applicable law. Hidden API access is unofficial; functionality may break and policies can change. Handle personal data lawfully (e.g., GDPR), minimize retention, and anonymize where appropriate. Obtain any necessary ethics approvals.
+
+## Contact Details
+
+- **Issue-Tracker:** <https://github.com/JBGruber/traktok/issues>
+- **Contact:** <JohannesB.Gruber@gmail.com>

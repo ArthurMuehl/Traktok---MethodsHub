@@ -1,0 +1,35 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: traktok
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Johannes
+    family-names: Gruber
+    affiliation: GESIS - Leibniz-Institut für Sozialwissenschaften
+    orcid: 'https://orcid.org/0000-0001-9177-1772'
+    email: johannes.gruber@gesis.org
+identifiers:
+  - type: doi
+    value: 10.31235/osf.io/xrgc6_v1
+  - type: url
+    value: 'https://osf.io/preprints/socarxiv/xrgc6_v1'
+repository-code: 'https://github.com/JBGruber/traktok'
+url: 'https://jbgruber.github.io/traktok/'
+abstract: >-
+  The social media platform TikTok has surged in societal
+  and political significance, underscoring theneed for
+  communication researchers to study its content and
+  dynamics.traktokis anRpackagethat combines an
+  implementation of the TikTok Research API with access to
+  TikTok content throughweb-scraping and the ‘hidden’ API,
+  which was reverse engineered to grant users access to
+  morecontent. While it is neither the first nor only tool
+  to do so, the combination both ways to retrieve datafrom
+  the platform with an easy-to-understand consistent syntax
+  is built to encourage TikTok research.
+license: GPL-3.0
