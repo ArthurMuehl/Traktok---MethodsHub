@@ -1,0 +1,17 @@
+name: quarto-r-binder
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - jupyterlab
+
+  - quarto
+
+  - r-base=4.3
+  - r-knitr
+  - r-rmarkdown
+
+  - r-httr
+  - r-jsonlite
+
+  - deno
