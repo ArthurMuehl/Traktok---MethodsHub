@@ -2,14 +2,8 @@
 title: "traktok - Methods Hub"
 format:
   html:
-    code-fold: show
-execute:
-  eval: true
-  echo: true
-  warning: false
-  message: false
-  freeze: false
-engine: knitr
+    embed-resources: true
+  gfm: default
 ---
 
 # traktok: Access TikTok Data from R
