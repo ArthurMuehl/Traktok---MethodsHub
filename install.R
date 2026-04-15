@@ -1,1 +1,2 @@
-install.packages("traktok")
+install.packages('traktok', repos = 'https://cloud.r-project.org')
+
