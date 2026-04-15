@@ -1,11 +1,5 @@
 project:
-  type: website
-
-format:
-  html:
-    code-fold: true
-    toc: true
-    toc-depth: 3
-
-execute:
-  freeze: false
+  title: TrakTok
+  type: default
+  render:
+    - traktok_methodshub_final.qmd
