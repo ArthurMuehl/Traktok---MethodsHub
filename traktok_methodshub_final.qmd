@@ -88,29 +88,11 @@ Typical API sampling is lightweight (CPU/RAM) and will run on any machine, that 
 Make sure that you are using the most recent package versions to ensure functionality. If you encounter any issues take advantage of the Issue Tracker, which you can find under "Contact Details".
 ```{r, eval=FALSE}
 install.packages("chromote")
-remotes::install_github("JBGruber/traktok")
+install.packages('traktok', repos = c('https://jbgruber.r-universe.dev', 'https://cloud.r-project.org'))
 install.packages("cookiemonster")
-```
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-# Quick check: can 'chromote' be loaded? (offline-safe)
-if (nzchar(system.file(package = "chromote"))) {
-  library(chromote)
-  print(utils::packageVersion("chromote"))
-} else {
-}
-# Quick check: can 'traktok' be loaded? (offline-safe)
-if (nzchar(system.file(package = "traktok"))) {
-  library(traktok)
-  print(utils::packageVersion("traktok"))
-} else {
-}
-# Quick check: can 'cookiemonster' be loaded? (offline-safe)
-if (nzchar(system.file(package = "cookiemonster"))) {
-  library(cookiemonster)
-  print(utils::packageVersion("cookiemonster"))
-} else {
-}
+library("chromote")
+library("traktok")
+library("cookiemonster")
 ```
 
 ## How to Use
@@ -136,19 +118,53 @@ The following table gives an overview of commonly used helper functions that you
 | authenticate | – | `auth_research` | `auth_hidden` |
 
 ### Authenticate (choose one)
-In order to use the R package and access data from TikTok a verification is needed. You can choose to use the official Research API or an unofficial API access.
 
-To get started with the unofficial/hidden API, you can have a look here: [Unofficial API Guide](https://jbgruber.github.io/traktok/articles/unofficial-api.html).      
-If you have access to the Research API or want to apply for it, have a look at this: [Official API Guide](https://jbgruber.github.io/traktok/articles/research-api.html).       
+In order to use the R package and access data from TikTok, authentication is
+required. You can choose between the official Research API or the unofficial
+hidden API.
+
+> **Running in mybinder.org?** Neither method stores credentials between
+> sessions — you will need to re-authenticate each time you launch a new
+> session.
+
+#### Option A: Research API
+
+This requires approved access from TikTok. If you have not applied yet and for further information, see the
+[Official API Guide](https://jbgruber.github.io/traktok/articles/research-api.html).
 
 ```{r, eval=FALSE}
-# Research API (requires approved access from TikTok)
-auth_research(token = "YOUR_RESEARCH_API_TOKEN")
+auth_research()
+```
 
-# Hidden API (mimics browser session; see Unofficial API Guide for cookie setup)
+#### Option B: Hidden API
+
+To get started with the hidden API, see the
+[Unofficial API Guide](https://jbgruber.github.io/traktok/articles/unofficial-api.html).
+
+Authentication relies on cookies exported from your browser's TikTok session.
+Follow these steps before running the code below:
+
+1. Log into TikTok in your browser.
+2. Install a cookie export extension:
+   [Get cookies.txt LOCALLY](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)
+   for Chromium-based browsers, or
+   [cookies.txt](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/)
+   for Firefox.
+3. Export the cookies for `tiktok.com`. The file is typically named
+   `www.tiktok.com_cookies.txt`.
+4. **Upload the file to this session** using the file browser (RStudio:
+   *Files* pane → *Upload*; Jupyter: folder icon in the left sidebar).
+
+Once the file is uploaded and visible in your working directory, run:
+
+```{r, eval=FALSE}
 cookiemonster::add_cookies("www.tiktok.com_cookies.txt")
 auth_check()
 ```
+
+> **Note:** Uploaded files are not retained between sessions. Keep your
+> exported cookies file somewhere easy to find on your computer so you can
+> re-upload it next time.
 
 The following examples use only the **hidden/unofficial API**. Note that, for larger collections, it is a good idea to work in smaller batches and save intermediate results, since repeated requests can trigger captchas, temporary blocking, or other interruptions.
 
