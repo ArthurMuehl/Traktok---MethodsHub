@@ -1,2 +1,2 @@
 zip
-chromium-driver
+chromium
